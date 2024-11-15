@@ -1,9 +1,8 @@
 import typing
 
-# from app.store.bot.manager import BotManager
+from app.store.bot.manager import BotManager
 from app.store.database import Database
-
-# from app.store.telegram_api.accessor import TgApiAccessor
+from app.store.telegram_api.accessor import TgApiAccessor
 
 if typing.TYPE_CHECKING:
     from app.web.app import Application
@@ -14,8 +13,8 @@ class Store:
         from app.users.accessor import UserAccessor
 
         self.user = UserAccessor(app)
-        # self.tg_api = TgApiAccessor(app)
-        # self.bot = BotManager(app)
+        self.tg_api = TgApiAccessor(app)
+        self.bot = BotManager(app)
 
 
 def setup_store(app: "Application"):
