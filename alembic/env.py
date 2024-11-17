@@ -9,8 +9,8 @@ from alembic import context
 
 from app.store.database import BaseModel
 from app.users.models import UserModel
-from app.quiz.model import ThemeModel, AnswerModel, QuestionModel
-from app.games.model import GameModel, UserStateModel
+from app.quiz.models import ThemeModel, AnswerModel, QuestionModel
+from app.games.models import GameModel, UserStateModel
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

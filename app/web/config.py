@@ -7,17 +7,17 @@ if typing.TYPE_CHECKING:
     from app.web.app import Application
 
 
-@dataclass
+@dataclass(kw_only=True, slots=True)
 class SessionConfig:
     key: str
 
 
-@dataclass
+@dataclass(kw_only=True, slots=True)
 class BotConfig:
     token: str
 
 
-@dataclass
+@dataclass(kw_only=True, slots=True)
 class DatabaseConfig:
     host: str = "localhost"
     port: int = 5432
@@ -26,7 +26,7 @@ class DatabaseConfig:
     database: str = "project"
 
 
-@dataclass
+@dataclass(kw_only=True, slots=True)
 class Config:
     session: SessionConfig | None = None
     bot: BotConfig | None = None
