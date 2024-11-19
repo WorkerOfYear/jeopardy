@@ -25,7 +25,7 @@ def upgrade() -> None:
     sa.Column('group_id', sa.Integer(), nullable=False),
     sa.Column('master_id', sa.Integer(), nullable=False),
     sa.Column('theme_id', sa.Integer(), nullable=False),
-    sa.Column('status', sa.Enum('ACTIVE', 'FINISHED', 'CANCELED', name='gamesstatusenum'), nullable=False),
+    sa.Column('status', sa.Enum('START', 'ACTIVE', 'FINISHED', 'CANCELED', name='gamesstatusenum'), nullable=False),
     sa.Column('start_time', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('end_time', sa.DateTime(timezone=True), nullable=False),
     sa.ForeignKeyConstraint(['master_id'], ['users.id'], ondelete='RESTRICT'),
