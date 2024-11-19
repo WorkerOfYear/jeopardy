@@ -20,6 +20,12 @@ class Message:
 
 
 @dataclass
+class UpdateUser:
+    id: int
+    username: str
+
+
+@dataclass
 class UpdateChat:
     id: int
 
@@ -35,12 +41,15 @@ class UpdateMessage:
 class Update:
     update_id: int
     message: UpdateMessage
+    user: UpdateUser
 
 
 @dataclass
 class CallbackUpdate:
     data: str
     chat: UpdateChat
+    user: UpdateUser
+
 
 @dataclass
 class TelegramResponse:
