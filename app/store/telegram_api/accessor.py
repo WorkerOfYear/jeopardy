@@ -3,7 +3,7 @@ import typing
 from aiohttp import ClientSession, TCPConnector
 
 from app.base.base_accessor import BaseAccessor
-from app.store.telegram_api.dataclasses import Update, UpdateMessage, Message, UpdateChat, CallbackUpdate
+from app.store.telegram_api.dataclasses import Update, UpdateMessage, Message, UpdateChat, CallbackUpdate, UpdateUser
 from app.store.telegram_api.poller import Poller
 from app.web.utils import make_url
 
@@ -22,11 +22,13 @@ class TgApiAccessor(BaseAccessor):
         self.session: ClientSession | None = None
         self.offset: int = 0
 
+
     async def connect(self, app: "Application") -> None:
         self.session = ClientSession(connector=TCPConnector(verify_ssl=False))
         self.poller = Poller(app.store)
         self.logger.info("start polling")
         self.poller.start()
+
 
     async def disconnect(self, app: "Application") -> None:
         if self.session:
@@ -34,8 +36,12 @@ class TgApiAccessor(BaseAccessor):
         if self.poller:
             await self.poller.stop()
 
-    def _build_query(self, method: str, params: dict) -> str:
+
+    def _build_query(self, method: str, params: dict | None = None) -> str:
+        if params is None:
+            params = {}
         return make_url(API_PATH, f"bot{self.app.config.bot.token}", method, **params)
+
 
     async def poll(self) -> None:
         async with self.session.get(
@@ -43,7 +49,8 @@ class TgApiAccessor(BaseAccessor):
                 method="getUpdates",
                 params={
                     "offset": self.offset,
-                    "timeout": 10
+                    "timeout": 10,
+                    "allowed_updates": ["message", "callback_query"]
                 },
             )
         ) as response:
@@ -53,7 +60,7 @@ class TgApiAccessor(BaseAccessor):
             for update in data.get("result", []):
                 self.offset = update["update_id"] + 1
 
-                if "callback_query" not in update:
+                if "message" in update:
                     updates.append(
                         Update(
                             update_id=update["update_id"],
@@ -63,27 +70,32 @@ class TgApiAccessor(BaseAccessor):
                                 chat=UpdateChat(
                                     id=update["message"]["chat"]["id"]
                                 )
+                            ),
+                            user=UpdateUser(
+                                id=update["message"]["from"]["id"],
+                                username=update["message"]["from"]["username"]
                             )
                         )
                     )
-                else:
+                elif "callback_query" in update:
                     updates.append(
                         CallbackUpdate(
                             data=update["callback_query"]["data"],
                             chat=UpdateChat(
                                 update["callback_query"]["message"]["chat"]["id"]
+                            ),
+                            user=UpdateUser(
+                                id=update["callback_query"]["from"]["id"],
+                                username=update["callback_query"]["from"]["username"],
                             )
                         )
                     )
             await self.app.store.bot.updates_handler(updates)
 
 
-    async def send_message(self, message: Message) -> None:
+    async def send_message(self, message: Message) -> int:
         async with self.session.post(
-            self._build_query(
-                "sendMessage",
-                params={},
-            ),
+            self._build_query("sendMessage"),
             json={
                 "chat_id": message.chat_id,
                 "text": message.text,
@@ -92,3 +104,27 @@ class TgApiAccessor(BaseAccessor):
         ) as response:
             data = await response.json()
             self.logger.info(data)
+            return data["result"]["message_id"]
+
+
+    async def edit_message(self, message: Message, message_id: int) -> int:
+        async with self.session.post(
+            self._build_query("editMessageText"),
+            json={
+                "chat_id": message.chat_id,
+                "text": message.text,
+                "message_id": message_id,
+            }
+        ) as response:
+            data = await response.json()
+            self.logger.info(data)
+            return data["result"]["message_id"]
+
+
+    @staticmethod
+    def create_inline(text: str, data: str) -> dict:
+        return {
+            "inline_keyboard": [
+                [{"text": text, "callback_data": data}],
+            ]
+        }
