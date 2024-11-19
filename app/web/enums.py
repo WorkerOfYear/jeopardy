@@ -15,6 +15,7 @@ class BaseEnum(Enum, metaclass=MetaEnum):
 
 
 class GamesStatusEnum(BaseEnum):
+    START = "START"
     ACTIVE = "ACTIVE"
     FINISHED = "FINISHED"
     CANCELED = "CANCELED"
