@@ -11,8 +11,12 @@ if typing.TYPE_CHECKING:
 class Store:
     def __init__(self, app: "Application"):
         from app.users.accessor import UserAccessor
+        from app.quiz.accessor import QuizAccessor
+        from app.games.accessor import GameAccessor
 
         self.user = UserAccessor(app)
+        self.quiz = QuizAccessor(app)
+        self.game = GameAccessor(app)
         self.tg_api = TgApiAccessor(app)
         self.bot = BotManager(app)
 
