@@ -1,3 +1,5 @@
+from urllib.parse import urlencode
+
 from aiohttp.web import json_response as aiohttp_json_response
 from aiohttp.web_response import Response
 
@@ -25,3 +27,13 @@ def error_json_response(
             "data": data or {},
         },
     )
+
+
+def make_url(base_url, *uris, **params):
+    url = base_url.rstrip("/")
+    for uri in uris:
+        _uri = uri.strip("/")
+        url = "{}/{}".format(url, _uri) if _uri else url
+    if params:
+        url = "{}?{}".format(url, urlencode(params))
+    return url
