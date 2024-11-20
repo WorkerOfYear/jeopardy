@@ -30,10 +30,10 @@ def error_json_response(
 
 
 def make_url(base_url, *uris, **params):
-    url = base_url.rstrip('/')
+    url = base_url.rstrip("/")
     for uri in uris:
-        _uri = uri.strip('/')
-        url = '{}/{}'.format(url, _uri) if _uri else url
+        _uri = uri.strip("/")
+        url = "{}/{}".format(url, _uri) if _uri else url
     if params:
-        url = '{}?{}'.format(url, urlencode(params))
+        url = "{}?{}".format(url, urlencode(params))
     return url

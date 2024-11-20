@@ -2,16 +2,15 @@ import asyncio
 import typing
 from asyncio import Task
 
-
 if typing.TYPE_CHECKING:
     from app.store import Store
+
 
 class Poller:
     def __init__(self, store: "Store") -> None:
         self.store = store
         self.is_running = False
         self.poll_task: Task | None = None
-
 
     def start(self) -> None:
         self.is_running = True

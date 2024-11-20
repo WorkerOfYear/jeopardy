@@ -16,10 +16,14 @@ class GameAccessor(BaseAccessor):
         super().__init__(app, *args, **kwargs)
 
     @staticmethod
-    async def execute_get_start_game(group_id: int, session: AsyncSession) -> GameModel | None:
-        stmt = (select(GameModel)
-                .where(GameModel.group_id == group_id)
-                .where(GameModel.status == GamesStatusEnum.START))
+    async def execute_get_start_game(
+        group_id: int, session: AsyncSession
+    ) -> GameModel | None:
+        stmt = (
+            select(GameModel)
+            .where(GameModel.group_id == group_id)
+            .where(GameModel.status == GamesStatusEnum.START)
+        )
         res = await session.execute(stmt)
         return res.scalars().one_or_none()
 
@@ -51,9 +55,11 @@ class GameAccessor(BaseAccessor):
         return new_user_state
 
     async def check_user_state(self, user_id, game_id) -> bool:
-        stmt = (select(UserStateModel)
-                .where(UserStateModel.user_id == user_id)
-                .where(UserStateModel.game_id == game_id))
+        stmt = (
+            select(UserStateModel)
+            .where(UserStateModel.user_id == user_id)
+            .where(UserStateModel.game_id == game_id)
+        )
         async with self.app.database.session() as session:
             res = await session.execute(stmt)
             return res.scalars().one_or_none() is not None
@@ -62,10 +68,14 @@ class GameAccessor(BaseAccessor):
         async with self.app.database.session() as session:
             return await self.execute_get_start_game(group_id, session)
 
-    async def check_game_in_chat(self, group_id, states: tuple[GamesStatusEnum, ...]) -> bool:
-        stmt = (select(GameModel)
-                .where(GameModel.group_id == group_id)
-                .where(GameModel.status.in_(states)))
+    async def check_game_in_chat(
+        self, group_id, states: tuple[GamesStatusEnum, ...]
+    ) -> bool:
+        stmt = (
+            select(GameModel)
+            .where(GameModel.group_id == group_id)
+            .where(GameModel.status.in_(states))
+        )
         async with self.app.database.session() as session:
             res = await session.execute(stmt)
             return res.scalars().one_or_none() is not None
@@ -73,13 +83,21 @@ class GameAccessor(BaseAccessor):
     async def add_theme_to_game(self, group_id: int, theme_id: int) -> None:
         async with self.app.database.session() as session:
             game = await self.execute_get_start_game(group_id, session)
-            upd = update(GameModel).where(GameModel.id == game.id).values(theme_id=theme_id)
+            upd = (
+                update(GameModel)
+                .where(GameModel.id == game.id)
+                .values(theme_id=theme_id)
+            )
             await session.execute(upd)
             await session.commit()
 
-    async def activate_game(self, group_id: int ) -> None:
+    async def activate_game(self, group_id: int) -> None:
         async with self.app.database.session() as session:
             game = await self.execute_get_start_game(group_id, session)
-            upd = update(GameModel).where(GameModel.id == game.id).values(status=GamesStatusEnum.ACTIVE)
+            upd = (
+                update(GameModel)
+                .where(GameModel.id == game.id)
+                .values(status=GamesStatusEnum.ACTIVE)
+            )
             await session.execute(upd)
             await session.commit()

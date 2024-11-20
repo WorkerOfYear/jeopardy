@@ -4,7 +4,7 @@ from collections.abc import Sequence
 from sqlalchemy import select
 
 from app.base.base_accessor import BaseAccessor
-from app.quiz.models import ThemeModel, QuestionModel
+from app.quiz.models import QuestionModel, ThemeModel
 
 if typing.TYPE_CHECKING:
     from app.web.app import Application
@@ -32,7 +32,9 @@ class QuizAccessor(BaseAccessor):
             res = await session.execute(stmt)
             return res.scalars().all()
 
-    async def list_questions_by_theme(self, theme_id: int) -> Sequence[QuestionModel]:
+    async def list_questions_by_theme(
+        self, theme_id: int
+    ) -> Sequence[QuestionModel]:
         stmt = select(QuestionModel).where(QuestionModel.theme_id == theme_id)
         async with self.app.database.session() as session:
             res = await session.execute(stmt)
