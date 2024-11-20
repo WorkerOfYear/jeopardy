@@ -130,12 +130,9 @@ class BotManager:
         if game is None:
             return
 
-        user = await self.app.store.user.get_user_by_telegram_id(update.user.id)
-        if user is None:
-            user = await self.app.store.user.create_user(
-                update.user.id, update.user.username
-            )
-
+        user = await self.get_or_create_user(
+            update.user.id, update.user.username
+        )
         if await self.app.store.game.check_user_state(
             user_id=user.id, game_id=game.id
         ):
