@@ -1,0 +1,10 @@
+session:
+  key: CaY5iCkYtN7DqXdiYK1BvmGrQuaSA4Tl4bEk9my0jc0=
+database:
+  host: localhost
+  port: 5432
+  user: postgres
+  password: 123
+  database: postgres
+bot:
+  token: 8124408804:AAFl0sphL4KaE3Bt4FV1x0qglHv4agQpeBw
