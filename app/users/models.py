@@ -11,7 +11,7 @@ class UserModel(BaseModel):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     telegram_id: Mapped[int] = mapped_column(BigInteger, nullable=False, unique=True)
-    username: Mapped[str | None] = mapped_column(nullable=True)
+    username: Mapped[str | None] = mapped_column(nullable=False)
     wins: Mapped[int] = mapped_column(default=0)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.utcnow()
