@@ -1,57 +1,40 @@
 from dataclasses import dataclass
 
 
-# @dataclass
-# class InlineKeyboardButton:
-#     text: str
-#     callback_data: str
-#
-#
-# @dataclass
-# class InlineKeyboardMarkup:
-#     inline_keyboard: list[list[InlineKeyboardButton]]
-
-
-@dataclass
+@dataclass(kw_only=True, slots=True)
 class Message:
     chat_id: int | str
     text: str
     reply_markup: dict
 
 
-@dataclass
+@dataclass(kw_only=True, slots=True)
 class UpdateUser:
     id: int
     username: str
 
 
-@dataclass
+@dataclass(kw_only=True, slots=True)
 class UpdateChat:
     id: int
 
 
-@dataclass
+@dataclass(kw_only=True, slots=True)
 class UpdateMessage:
     message_id: int
     text: str
     chat: UpdateChat
 
 
-@dataclass
+@dataclass(kw_only=True, slots=True)
 class Update:
     update_id: int
     message: UpdateMessage
     user: UpdateUser
 
 
-@dataclass
+@dataclass(kw_only=True, slots=True)
 class CallbackUpdate:
     data: str
     chat: UpdateChat
     user: UpdateUser
-
-
-@dataclass
-class TelegramResponse:
-    ok: bool
-    result: list[Update]

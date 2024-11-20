@@ -43,6 +43,15 @@ class TgApiAccessor(BaseAccessor):
         return make_url(API_PATH, f"bot{self.app.config.bot.token}", method, **params)
 
 
+    @staticmethod
+    def get_username(update: dict) -> str:
+        try:
+            return update["callback_query"]["from"]["username"]
+        except KeyError:
+            username: str = update["callback_query"]["from"]["first_name"] + update["callback_query"]["from"]["last_name"]
+            return username.strip()
+
+
     async def poll(self) -> None:
         async with self.session.get(
             self._build_query(
@@ -82,11 +91,11 @@ class TgApiAccessor(BaseAccessor):
                         CallbackUpdate(
                             data=update["callback_query"]["data"],
                             chat=UpdateChat(
-                                update["callback_query"]["message"]["chat"]["id"]
+                                id=update["callback_query"]["message"]["chat"]["id"],
                             ),
                             user=UpdateUser(
                                 id=update["callback_query"]["from"]["id"],
-                                username=update["callback_query"]["from"]["username"],
+                                username=self.get_username(update),
                             )
                         )
                     )

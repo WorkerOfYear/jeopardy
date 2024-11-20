@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import DateTime, Enum, ForeignKey, func
+from sqlalchemy import DateTime, Enum, ForeignKey, func, BigInteger
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.store.database import BaseModel
@@ -11,7 +11,7 @@ class GameModel(BaseModel):
     __tablename__ = "games"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    group_id: Mapped[int] = mapped_column(nullable=False)
+    group_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
     master_id: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="RESTRICT"), nullable=False, index=True
     )

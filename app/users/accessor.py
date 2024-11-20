@@ -24,20 +24,17 @@ class UserAccessor(BaseAccessor):
         async with self.app.database.session() as session:
             session.add(new_user)
             await session.commit()
-            return new_user
+
+        return new_user
 
     async def check_user(self, telegram_id: int) -> bool:
         stmt = select(UserModel).where(UserModel.telegram_id == telegram_id)
         async with self.app.database.session() as session:
             res = await session.execute(stmt)
-            await session.commit()
-            if res.scalars().first() is not None:
-                return True
-            return False
+            return res.scalars().first() is not None
 
-    async def get_user_by_telegram_id(self, telegram_id) -> UserModel | None:
+    async def get_user_by_telegram_id(self, telegram_id: int) -> UserModel | None:
         stmt = select(UserModel).where(UserModel.telegram_id == telegram_id)
         async with self.app.database.session() as session:
             res = await session.execute(stmt)
-            await session.commit()
             return res.scalars().first()
